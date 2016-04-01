@@ -1,0 +1,12 @@
+{
+	"name": "parserhtml-lp",
+	"description": "Parser html",
+	"private": false,
+	"version": "0.0.1",
+	"scripts": {
+		"start": "node parserHtml.js"
+	},
+	"dependencies": {
+		"htmlparser2": "0.10.23"
+	}
+}
