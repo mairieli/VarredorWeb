@@ -16,17 +16,23 @@ var parseResponse = function(response) {
 	});
 	response.on('end', function(chunk) {
 		var dom = makeDom(data);
-		//busca(dom, lista, "class", "tileHeadline")
 
-		function logArray(element, index, array) {
-			var filhote = traversal.getChildren(element[1])
-			console.log("Endereço completo do Campus: ")
-			console.log(filhote[0].data)
-		}
-		var lista = [];
-		busca(dom, lista, "id", "portal-footer")
-		lista.forEach(logArray);
+		var listaApresentacao = [];
+		busca(dom, listaApresentacao, "class", "navTreeItem visualNoMarker navTreeFolderish section-o-campus")
+		var element = listaApresentacao[0]
+		var linkOCampus = traversal.getAttributeValue(element[1], "href")
+		http.get(linkOCampus, function(response) {
+			getTextoApresentacao(response)
+		}).on('error', function(e) {
+			console.log("Got error: " + e.message);
+		});
 
+		var listaRodape = [];
+		busca(dom, listaRodape, "id", "portal-footer")
+		var elemento = listaRodape[0]
+		var rodape = traversal.getChildren(elemento[1])
+		console.log("Endereço completo do Campus: ")
+		console.log(rodape[0].data)
 	});
 }
 
@@ -43,14 +49,24 @@ var busca = function(dom, lista, tipo, atributo) {
 	return null;
 }
 
-var getRodape = function(response) {
+var getTextoApresentacao = function(response) {
 	var data = "";
 	response.on('data', function(chunk) {
 		data += chunk;
 	});
 	response.on('end', function(chunk) {
 		var dom = makeDom(data);
-
-		console.log(dom);
+		var retorno = [];
+		busca(dom, retorno, "id", "parent-fieldname-text-84bff7d47dcef80d890fe2eb7c8d20bb")
+		var elemento = retorno[0]
+		var textoApresentacao = traversal.getChildren(elemento[3])
+		console.log("\nTexto de Apresentacao: ")
+		console.log(textoApresentacao[0].data)
 	});
+}
+
+function imprimeTextoApresentacao(element, index, array) {
+	var filhote = traversal.getChildren(element[1])
+	console.log("Endereço completo do Campus: ")
+	console.log(filhote[0].data)
 }
