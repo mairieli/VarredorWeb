@@ -7,7 +7,7 @@ http.get(url, function(response) {
 	parseResponse(response);
 }).on('error', function(e) {
 	console.log("Got error: " + e.message);
-}); 
+});
 
 var parseResponse = function(response) {
 	var data = "";
@@ -16,30 +16,24 @@ var parseResponse = function(response) {
 	});
 	response.on('end', function(chunk) {
 		var dom = makeDom(data);
+		//busca(dom, lista, "class", "tileHeadline")
 
-		var lista = [];
-		busca(dom, lista, "class", "tileItem visualIEFloatFix")
-
-		function logArray(element, index, array){
-			console.log(element)
-			console.log("---------------------")
+		function logArray(element, index, array) {
+			var filhote = traversal.getChildren(element[1])
+			console.log("Endereço completo do Campus: ")
+			console.log(filhote[0].data)
 		}
-
+		var lista = [];
+		busca(dom, lista, "id", "portal-footer")
 		lista.forEach(logArray);
 
-		var lista2 = [];
-		busca(lista[5], lista2, "class", "tileHeadline")
-
-		lista2.forEach(logArray);
-		//console.log(x)
-			
 	});
 }
 
-var busca = function(dom, lista, tipo, atributo){
-	if(dom != null){
-		for(var i = 0; i < dom.length; i++){
-			if(traversal.getAttributeValue(dom[i], tipo) == atributo){
+var busca = function(dom, lista, tipo, atributo) {
+	if (dom != null) {
+		for (var i = 0; i < dom.length; i++) {
+			if (traversal.getAttributeValue(dom[i], tipo) == atributo) {
 				lista.push(traversal.getChildren(dom[i]));
 			} else {
 				busca(traversal.getChildren(dom[i]), lista, tipo, atributo);
@@ -47,4 +41,16 @@ var busca = function(dom, lista, tipo, atributo){
 		}
 	}
 	return null;
+}
+
+var getRodape = function(response) {
+	var data = "";
+	response.on('data', function(chunk) {
+		data += chunk;
+	});
+	response.on('end', function(chunk) {
+		var dom = makeDom(data);
+
+		console.log(dom);
+	});
 }
