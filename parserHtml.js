@@ -31,7 +31,7 @@ var main = function(response) {
 		buscaDoms(dom, listaRodape, "id", "portal-footer")
 		var elemento = listaRodape[0]
 		var rodape = traversal.getChildren(elemento[1])
-		console.log("Endereço completo do Campus: ")
+		console.log("********Endereço completo do Campus********")
 		console.log(rodape[0].data)
 
 		var listalnkNoticias = [];
@@ -105,7 +105,7 @@ var getNoticiaInformacoes = function(response) {
 		var titulo = [];
 		buscaDoms(dom, titulo, "id", "parent-fieldname-title")
 		var elemento = titulo[0]
-		console.log("\n********Título: ")
+		console.log("\n********Título********")
 
 		// Expressão regular - Regex e Replace
 		// \s - qualquer espaço em branco
@@ -118,7 +118,7 @@ var getNoticiaInformacoes = function(response) {
 		var texto = [];
 		buscaDoms(dom, texto, "id", "parent-fieldname-text")
 		var elementoTexto = texto[0]
-		console.log("\n********Texto: ")
+		console.log("\n********Texto********")
 		var listaTexto = []
 		buscaTextoNoticaiInformacoes(elementoTexto, listaTexto) 
 		var textoFinal = ""
@@ -153,7 +153,7 @@ var getTextoApresentacao = function(response) {
 		buscaDoms(dom, retorno, "id", "parent-fieldname-text-84bff7d47dcef80d890fe2eb7c8d20bb")
 		var elemento = retorno[0]
 		var textoApresentacao = traversal.getChildren(elemento[3])
-		console.log("\nTexto de Apresentacao: ")
+		console.log("\n********Texto de Apresentacao********")
 		console.log(textoApresentacao[0].data)
 	});
 }
