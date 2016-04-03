@@ -84,7 +84,7 @@ var main = function(response) {
 };
 
 var buscaDoms = function(dom, lista, tipo, atributo) {
-	if (dom !== null) {
+	if (dom) {
 		for (var i = 0; i < dom.length; i++) {
 			if (traversal.getAttributeValue(dom[i], tipo) == atributo) {
 				lista.push(traversal.getChildren(dom[i]));
@@ -157,9 +157,9 @@ var getNoticiaInformacoes = function(response, ehNoticia, link) {
 };
 
 var buscaTextoNoticaiInformacoes = function(dom, listaTexto) {
-	if (dom !== null) {
+	if (dom) {
 		for (var i = 0; i < dom.length; i++) {
-			if (dom[i].data !== null) {
+			if (dom[i].data) {
 				listaTexto.push(dom[i].data);
 			} else {
 				buscaTextoNoticaiInformacoes(traversal.getChildren(dom[i]), listaTexto);
