@@ -16,7 +16,7 @@ function main(response) {
 
 		imprimeNoticiasInformacoes(dom);
 	});
-};
+}
 
 /*
  * Imprime o texto de apresentação que está dentro do link "O CÂMPUS"
@@ -24,14 +24,16 @@ function main(response) {
 function imprimeApresentacao(dom) {
 	var listaApresentacao = [];
 	treeDom.getNodesDom(dom, listaApresentacao, "class", "navTreeItem visualNoMarker navTreeFolderish section-o-campus");
-	var element = listaApresentacao[0];
-	var linkOCampus = domutils.getAttributeValue(element[1], "href");
+
+	var domApresentacao = listaApresentacao[0];
+	var linkOCampus = domutils.getAttributeValue(domApresentacao[1], "href");
+
 	http.get(linkOCampus, function(response) {
 		getTextoApresentacao(response);
 	}).on('error', function(e) {
 		console.log("Got error: " + e.message);
 	});
-};
+}
 
 /*
  * Imprime o endereço completo do campus, que está no rodapé
@@ -39,69 +41,69 @@ function imprimeApresentacao(dom) {
 function imprimeRodape(dom) {
 	var listaRodape = [];
 	treeDom.getNodesDom(dom, listaRodape, "id", "portal-footer");
-	var elemento = listaRodape[0];
-	var rodape = domutils.getChildren(elemento[1]);
+
+	var domRodape = listaRodape[0];
+	var rodape = domutils.getChildren(domRodape[1]);
+
 	console.log("======Endereço completo do Campus======");
 	console.log(rodape[0].data);
-	console.log("_______________________________________________________________________________");
-};
+	
+}
 
 /*
  * Imprime as ultimas notícias e informações institucuinais
  */
 function imprimeNoticiasInformacoes(dom) {
-	var listalnkNoticias = [];
-	treeDom.getNodesDom(dom, listalnkNoticias, "class", "tileHeadline");
+	var listaDomsNoticias = [];
+	treeDom.getNodesDom(dom, listaDomsNoticias, "class", "tileHeadline");
+
 	// remove os nós que contem os links das notícias/informações que não serão exibidas
-	listalnkNoticias.splice(2, 2);
-	listalnkNoticias.splice(5, 3);
+	listaDomsNoticias.splice(2, 2);
+	listaDomsNoticias.splice(5, 3);
+
 	// Percorre a lista dos nós que contem os links e chama a função para imprimir os dados.
-	for (var i = 0; i < listalnkNoticias.length; i++) {
-		var elemento = listalnkNoticias[i];
+	for (var i = 0; i < listaDomsNoticias.length; i++) {
+		var domNoticia = listaDomsNoticias[i];
 		if (i > 1) {
-			imprimeInformacoesInstitucionais(elemento);
+			imprimeInformacoesInstitucionais(domNoticia);
 		} else {
-			imprimeNoticia(elemento);
+			imprimeNoticia(domNoticia);
 		}
 	}
-};
+}
 
 function imprimeNoticia(elemento) {
 	var link = domutils.getAttributeValue(elemento[1], "href");
+
 	http.get(link, function(response) {
 		getNoticiaInformacoes(response, true, link);
 	}).on('error', function(e) {
 		console.log("Got error: " + e.message);
 	});
-
-};
+}
 
 function imprimeInformacoesInstitucionais(elemento) {
 	var link = domutils.getAttributeValue(elemento[1], "href");
+
 	http.get(link, function(response) {
 		getNoticiaInformacoes(response, false, link);
 	}).on('error', function(e) {
 		console.log("Got error: " + e.message);
 	});
-};
-
-function imprimeTextoApresentacao(element, index, array) {
-	var filho = domutils.getChildren(element[1]);
-	var texto = filho[0];
-	console.log("Endereço completo do Campus: ");
-	console.log(texto.data);
-};
+}
 
 function getNoticiaInformacoes(response, ehNoticia, link) {
 	var data = "";
 	response.on('data', function(chunk) {
 		data += chunk;
 	});
+
 	response.on('end', function(chunk) {
 		var dom = treeDom.getTreeDom(data);
 		var titulo = [];
 		treeDom.getNodesDom(dom, titulo, "id", "parent-fieldname-title");
-		var elemento = titulo[0];
+
+		var domTitulo = titulo[0];
 		console.log("\n======Título======");
 
 		// Expressão regular - Regex e Replace
@@ -109,7 +111,7 @@ function getNoticiaInformacoes(response, ehNoticia, link) {
 		// {2,} - em quantidade de dois ou mais
 		// g - apanhar todas as ocorrências, não só a primeira
 		// Substitui por ' '
-		console.log(elemento[0].data.replace(/\s{2,}/g, ' '));
+		console.log(domTitulo[0].data.replace(/\s{2,}/g, ' '));
 
 		if (!ehNoticia) {
 			console.log("\n======Link======");
@@ -148,9 +150,9 @@ function getNoticiaInformacoes(response, ehNoticia, link) {
 
 		console.log("\n======Texto======");
 		console.log(textoFinal.replace(/\s{2,}/g, '\n'));
-		console.log("_______________________________________________________________________________");
+		imprimeSeparador();
 	});
-};
+}
 
 function buscaTextoNoticiaInformacoes(dom, listaTexto) {
 	if (dom) {
@@ -163,24 +165,32 @@ function buscaTextoNoticiaInformacoes(dom, listaTexto) {
 		}
 	}
 	return null;
-};
+}
 
 function getTextoApresentacao(response) {
 	var data = "";
 	response.on('data', function(chunk) {
 		data += chunk;
 	});
+
 	response.on('end', function(chunk) {
 		var dom = treeDom.getTreeDom(data);
+
 		var retorno = [];
 		treeDom.getNodesDom(dom, retorno, "id", "parent-fieldname-text-84bff7d47dcef80d890fe2eb7c8d20bb");
-		var elemento = retorno[0];
-		var textoApresentacao = domutils.getChildren(elemento[3]);
+
+		var domTextoApresentacao = retorno[0];
+		var textoApresentacao = domutils.getChildren(domTextoApresentacao[3]);
+
 		console.log("\n======Texto de Apresentacao======");
 		console.log(textoApresentacao[0].data);
-		console.log("_______________________________________________________________________________");
+		imprimeSeparador();
 	});
-};
+}
+
+function imprimeSeparador(){
+	console.log("_______________________________________________________________________________");
+}
 
 exports.parserHtml = function(url) {
 	http.get(url, function(response) {
