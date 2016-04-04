@@ -18,5 +18,5 @@ v5.10.0
 ```
 $ git clone https://github.com/mairieli/parserhtml-lp.git
 $ cd parserhtml-lp
-$ node parserHtml.js
+$ node index.js
 ```
