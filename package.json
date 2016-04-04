@@ -4,7 +4,7 @@
 	"private": false,
 	"version": "0.0.1",
 	"scripts": {
-		"start": "node parserHtml.js"
+		"start": "node index.js"
 	},
 	"dependencies": {
 		"htmlparser2": "0.10.23"
