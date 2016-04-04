@@ -2,7 +2,7 @@ var treeDom = require("./treeDom");
 var http = require('http');
 var domutils = require('domutils');
 
-var main = function(response) {
+function main(response) {
 	var data = "";
 	response.on('data', function(chunk) {
 		data += chunk;
@@ -10,7 +10,7 @@ var main = function(response) {
 	response.on('end', function(chunk) {
 		var dom = treeDom.getTreeDom(data);
 
-		imprimeTextoApresentacao(dom);
+		imprimeApresentacao(dom);
 
 		imprimeRodape(dom);
 
@@ -18,7 +18,7 @@ var main = function(response) {
 	});
 };
 
-var imprimeTextoApresentacao = function(dom) {
+function imprimeApresentacao(dom) {
 	var listaApresentacao = [];
 	treeDom.getNodesDom(dom, listaApresentacao, "class", "navTreeItem visualNoMarker navTreeFolderish section-o-campus");
 	var element = listaApresentacao[0];
@@ -30,7 +30,7 @@ var imprimeTextoApresentacao = function(dom) {
 	});
 };
 
-var imprimeRodape = function(dom) {
+function imprimeRodape(dom) {
 	var listaRodape = [];
 	treeDom.getNodesDom(dom, listaRodape, "id", "portal-footer");
 	var elemento = listaRodape[0];
@@ -40,7 +40,7 @@ var imprimeRodape = function(dom) {
 	console.log("_______________________________________________________________________________");
 };
 
-var imprimeNoticiasInformacoes = function(dom) {
+function imprimeNoticiasInformacoes(dom) {
 	var listalnkNoticias = [];
 	treeDom.getNodesDom(dom, listalnkNoticias, "class", "tileHeadline");
 	listalnkNoticias.splice(2, 2);
@@ -55,7 +55,7 @@ var imprimeNoticiasInformacoes = function(dom) {
 	}
 };
 
-var imprimeNoticia = function(elemento) {
+function imprimeNoticia(elemento) {
 	var link = domutils.getAttributeValue(elemento[1], "href");
 	http.get(link, function(response) {
 		getNoticiaInformacoes(response, true, link);
@@ -65,7 +65,7 @@ var imprimeNoticia = function(elemento) {
 
 };
 
-var imprimeInformacoesInstitucionais = function(elemento) {
+function imprimeInformacoesInstitucionais(elemento) {
 	var link = domutils.getAttributeValue(elemento[1], "href");
 	http.get(link, function(response) {
 		getNoticiaInformacoes(response, false, link);
@@ -81,7 +81,7 @@ function imprimeTextoApresentacao(element, index, array) {
 	console.log(texto.data);
 };
 
-var getNoticiaInformacoes = function(response, ehNoticia, link) {
+function getNoticiaInformacoes(response, ehNoticia, link) {
 	var data = "";
 	response.on('data', function(chunk) {
 		data += chunk;
@@ -141,7 +141,7 @@ var getNoticiaInformacoes = function(response, ehNoticia, link) {
 	});
 };
 
-var buscaTextoNoticiaInformacoes = function(dom, listaTexto) {
+function buscaTextoNoticiaInformacoes(dom, listaTexto) {
 	if (dom) {
 		for (var i = 0; i < dom.length; i++) {
 			if (dom[i].data) {
@@ -154,7 +154,7 @@ var buscaTextoNoticiaInformacoes = function(dom, listaTexto) {
 	return null;
 };
 
-var getTextoApresentacao = function(response) {
+function getTextoApresentacao(response) {
 	var data = "";
 	response.on('data', function(chunk) {
 		data += chunk;
