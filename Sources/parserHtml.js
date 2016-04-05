@@ -12,8 +12,6 @@ function main(response) {
 
 		imprimeApresentacao(dom);
 
-		imprimeRodape(dom);
-
 		imprimeNoticiasInformacoes(dom);
 	});
 }
@@ -29,7 +27,7 @@ function imprimeApresentacao(dom) {
 	var linkOCampus = domutils.getAttributeValue(domApresentacao[1], "href");
 
 	http.get(linkOCampus, function(response) {
-		getTextoApresentacao(response);
+		getTextoApresentacao(response, dom);
 	}).on('error', function(e) {
 		console.log("Got error: " + e.message);
 	});
@@ -167,7 +165,7 @@ function buscaTextoNoticiaInformacoes(dom, listaTexto) {
 	return null;
 }
 
-function getTextoApresentacao(response) {
+function getTextoApresentacao(response, dom) {
 	var data = "";
 	response.on('data', function(chunk) {
 		data += chunk;
@@ -185,6 +183,8 @@ function getTextoApresentacao(response) {
 		console.log("\n======Texto de Apresentacao======");
 		console.log(textoApresentacao[0].data);
 		imprimeSeparador();
+
+		imprimeRodape(dom);
 	});
 }
 
