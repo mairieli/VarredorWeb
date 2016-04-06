@@ -1,21 +1,15 @@
 var treeDom = require("./treeDom");
 var http = require('http');
 var domutils = require('domutils');
-var events = require('events');
 var request = require("request");
-
-emissorEvento = new events.EventEmitter();
 
 exports.parserHtml = function(url) {
 	request(url, function(error, response, body) {
 		var dom = treeDom.getTreeDom(body);
 
-		imprimeApresentacao(dom);
-
-		imprimeRodape(dom);
-
 		imprimeNoticiasInformacoes(dom);
 
+		imprimeApresentacao(dom);
 	});
 };
 
@@ -42,6 +36,7 @@ function imprimeApresentacao(dom) {
 		console.log(textoApresentacao[0].data);
 		imprimeSeparador();
 
+		imprimeRodape(dom);
 	});
 }
 
@@ -55,8 +50,9 @@ function imprimeRodape(dom) {
 	var domRodape = listaRodape[0];
 	var rodape = domutils.getChildren(domRodape[1]);
 
-	console.log("======Endereço completo do Campus======");
+	console.log("\n======Endereço completo do Campus======");
 	console.log(rodape[0].data);
+	imprimeSeparador();
 }
 
 /*
@@ -91,11 +87,6 @@ function getNoticiaInformacoes(ehNoticia, link) {
 		var domTitulo = titulo[0];
 		console.log("\n======Título======");
 
-		// Expressão regular - Regex e Replace
-		// \s - qualquer espaço em branco
-		// {2,} - em quantidade de dois ou mais
-		// g - apanhar todas as ocorrências, não só a primeira
-		// Substitui por ' '
 		console.log(domTitulo[0].data.replace(/\s{2,}/g, ' '));
 
 		if (!ehNoticia) {
