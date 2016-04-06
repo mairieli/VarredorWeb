@@ -1,5 +1,4 @@
 var treeDom = require("./treeDom");
-var http = require('http');
 var domutils = require('domutils');
 var request = require("request");
 
@@ -8,8 +7,6 @@ exports.parserHtml = function(url) {
 		var dom = treeDom.getTreeDom(body);
 
 		imprimeNoticiasInformacoes(dom);
-
-		imprimeApresentacao(dom);
 	});
 };
 
@@ -19,7 +16,6 @@ exports.parserHtml = function(url) {
 function imprimeApresentacao(dom) {
 	var listaApresentacao = [];
 	treeDom.getNodesDom(dom, listaApresentacao, "class", "navTreeItem visualNoMarker navTreeFolderish section-o-campus");
-
 	var domApresentacao = listaApresentacao[0];
 	var linkOCampus = domutils.getAttributeValue(domApresentacao[1], "href");
 
@@ -66,68 +62,70 @@ function imprimeNoticiasInformacoes(dom) {
 	listaDomsNoticias.splice(2, 2);
 	listaDomsNoticias.splice(5, 3);
 
-	// Percorre a lista dos nós que contem os links e chama a função para imprimir os dados.
-	for (var i = 0; i < listaDomsNoticias.length; i++) {
-		var domNoticia = listaDomsNoticias[i];
-		var link = domutils.getAttributeValue(domNoticia[1], "href");
-		if (i > 1) {
-			getNoticiaInformacoes(false, link);
-		} else {
-			getNoticiaInformacoes(true, link);
-		}
-	}
+	getNoticiaInformacoes(listaDomsNoticias, 0, dom);
 }
 
-function getNoticiaInformacoes(ehNoticia, link) {
-	request(link, function(error, response, body) {
-		var dom = treeDom.getTreeDom(body);
-		var titulo = [];
-		treeDom.getNodesDom(dom, titulo, "id", "parent-fieldname-title");
+function getNoticiaInformacoes(listaDomsNoticias, indice, domIncial) {
+	if (indice >= 5) {
+		imprimeApresentacao(domIncial);
+	} else {
 
-		var domTitulo = titulo[0];
-		console.log("\n======Título======");
+		var domNoticia = listaDomsNoticias[indice];
+		var link = domutils.getAttributeValue(domNoticia[1], "href");
 
-		console.log(domTitulo[0].data.replace(/\s{2,}/g, ' '));
+		request(link, function(error, response, body) {
+			var dom = treeDom.getTreeDom(body);
+			var titulo = [];
+			treeDom.getNodesDom(dom, titulo, "id", "parent-fieldname-title");
 
-		if (!ehNoticia) {
-			console.log("\n======Link======");
-			console.log(link);
-		}
+			var domTitulo = titulo[0];
+			console.log("\n======Título======");
 
-		var texto = [];
-		treeDom.getNodesDom(dom, texto, "id", "parent-fieldname-text");
+			console.log(domTitulo[0].data.replace(/\s{2,}/g, ' '));
 
-		var listaTexto = [];
-		buscaTextoNoticiaInformacoes(texto[0], listaTexto);
-		var textoFinal = "";
+			if (indice > 1) {
+				console.log("\n======Link======");
+				console.log(link);
+			}
 
-		if (ehNoticia) {
-			var domTituloNoticiaNoTexto = [];
-			var tituloNoticiaNoTexto = [];
-			treeDom.getNodesDom(dom, domTituloNoticiaNoTexto, "id", "parent-fieldname-description");
-			buscaTextoNoticiaInformacoes(domTituloNoticiaNoTexto[0], tituloNoticiaNoTexto);
-			textoFinal += tituloNoticiaNoTexto[0].replace(/\s{2,}/g, ' ');
-		}
+			var texto = [];
+			treeDom.getNodesDom(dom, texto, "id", "parent-fieldname-text");
 
-		for (var valor in listaTexto) {
-			if (ehNoticia) {
-				if (valor != listaTexto.length - 2) {
+			var listaTexto = [];
+			buscaTextoNoticiaInformacoes(texto[0], listaTexto);
+			var textoFinal = "";
+
+			if (indice <= 1) {
+				var domTituloNoticiaNoTexto = [];
+				var tituloNoticiaNoTexto = [];
+				treeDom.getNodesDom(dom, domTituloNoticiaNoTexto, "id", "parent-fieldname-description");
+				buscaTextoNoticiaInformacoes(domTituloNoticiaNoTexto[0], tituloNoticiaNoTexto);
+				textoFinal += tituloNoticiaNoTexto[0].replace(/\s{2,}/g, ' ');
+			}
+
+			for (var valor in listaTexto) {
+				if (indice <= 1) {
+					if (valor != listaTexto.length - 2) {
+						textoFinal += listaTexto[valor];
+					}
+				} else {
 					textoFinal += listaTexto[valor];
 				}
-			} else {
-				textoFinal += listaTexto[valor];
 			}
-		}
 
-		if (ehNoticia) {
-			console.log("\n======Data======");
-			console.log(listaTexto[listaTexto.length - 2]);
-		}
+			if (indice <= 1) {
+				console.log("\n======Data======");
+				console.log(listaTexto[listaTexto.length - 2]);
+			}
 
-		console.log("\n======Texto======");
-		console.log(textoFinal.replace(/\s{2,}/g, '\n'));
-		imprimeSeparador();
-	});
+			console.log("\n======Texto======");
+			console.log(textoFinal.replace(/\s{2,}/g, '\n'));
+			imprimeSeparador();
+
+			getNoticiaInformacoes(listaDomsNoticias, indice + 1, domIncial);
+
+		});
+	}
 }
 
 function buscaTextoNoticiaInformacoes(dom, listaTexto) {
