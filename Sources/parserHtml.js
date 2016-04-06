@@ -1,25 +1,23 @@
 var treeDom = require("./treeDom");
 var http = require('http');
 var domutils = require('domutils');
-var events = require('events'); 
+var events = require('events');
+var request = require("request");
 
 emissorEvento = new events.EventEmitter();
 
-function main(response) {
-	var data = "";
-	response.on('data', function(chunk) {
-		data += chunk;
-	});
-	response.on('end', function(chunk) {
-		var dom = treeDom.getTreeDom(data);
+exports.parserHtml = function(url) {
+	request(url, function(error, response, body) {
+		var dom = treeDom.getTreeDom(body);
 
 		imprimeApresentacao(dom);
 
+		imprimeRodape(dom);
+
 		imprimeNoticiasInformacoes(dom);
 
-		emissorEvento.on('rodape', imprimeRodape(dom));
 	});
-}
+};
 
 /*
  * Imprime o texto de apresentação que está dentro do link "O CÂMPUS"
@@ -31,10 +29,19 @@ function imprimeApresentacao(dom) {
 	var domApresentacao = listaApresentacao[0];
 	var linkOCampus = domutils.getAttributeValue(domApresentacao[1], "href");
 
-	http.get(linkOCampus, function(response) {
-		getTextoApresentacao(response, dom);
-	}).on('error', function(e) {
-		console.log("Got error: " + e.message);
+	request(linkOCampus, function(error, response, body) {
+		var dom = treeDom.getTreeDom(body);
+
+		var retorno = [];
+		treeDom.getNodesDom(dom, retorno, "id", "parent-fieldname-text-84bff7d47dcef80d890fe2eb7c8d20bb");
+
+		var domTextoApresentacao = retorno[0];
+		var textoApresentacao = domutils.getChildren(domTextoApresentacao[3]);
+
+		console.log("\n======Texto de Apresentacao======");
+		console.log(textoApresentacao[0].data);
+		imprimeSeparador();
+
 	});
 }
 
@@ -50,7 +57,6 @@ function imprimeRodape(dom) {
 
 	console.log("======Endereço completo do Campus======");
 	console.log(rodape[0].data);
-	
 }
 
 /*
@@ -67,42 +73,18 @@ function imprimeNoticiasInformacoes(dom) {
 	// Percorre a lista dos nós que contem os links e chama a função para imprimir os dados.
 	for (var i = 0; i < listaDomsNoticias.length; i++) {
 		var domNoticia = listaDomsNoticias[i];
+		var link = domutils.getAttributeValue(domNoticia[1], "href");
 		if (i > 1) {
-			imprimeInformacoesInstitucionais(domNoticia);
+			getNoticiaInformacoes(false, link);
 		} else {
-			imprimeNoticia(domNoticia);
+			getNoticiaInformacoes(true, link);
 		}
 	}
 }
 
-function imprimeNoticia(elemento) {
-	var link = domutils.getAttributeValue(elemento[1], "href");
-
-	http.get(link, function(response) {
-		getNoticiaInformacoes(response, true, link);
-	}).on('error', function(e) {
-		console.log("Got error: " + e.message);
-	});
-}
-
-function imprimeInformacoesInstitucionais(elemento) {
-	var link = domutils.getAttributeValue(elemento[1], "href");
-
-	http.get(link, function(response) {
-		getNoticiaInformacoes(response, false, link);
-	}).on('error', function(e) {
-		console.log("Got error: " + e.message);
-	});
-}
-
-function getNoticiaInformacoes(response, ehNoticia, link) {
-	var data = "";
-	response.on('data', function(chunk) {
-		data += chunk;
-	});
-
-	response.on('end', function(chunk) {
-		var dom = treeDom.getTreeDom(data);
+function getNoticiaInformacoes(ehNoticia, link) {
+	request(link, function(error, response, body) {
+		var dom = treeDom.getTreeDom(body);
 		var titulo = [];
 		treeDom.getNodesDom(dom, titulo, "id", "parent-fieldname-title");
 
@@ -170,37 +152,6 @@ function buscaTextoNoticiaInformacoes(dom, listaTexto) {
 	return null;
 }
 
-function getTextoApresentacao(response, dom) {
-	var data = "";
-	response.on('data', function(chunk) {
-		data += chunk;
-	});
-
-	response.on('end', function(chunk) {
-		var dom = treeDom.getTreeDom(data);
-
-		var retorno = [];
-		treeDom.getNodesDom(dom, retorno, "id", "parent-fieldname-text-84bff7d47dcef80d890fe2eb7c8d20bb");
-
-		var domTextoApresentacao = retorno[0];
-		var textoApresentacao = domutils.getChildren(domTextoApresentacao[3]);
-
-		console.log("\n======Texto de Apresentacao======");
-		console.log(textoApresentacao[0].data);
-		imprimeSeparador();
-
-		emissorEvento.emit('rodape');
-	});
-}
-
-function imprimeSeparador(){
+function imprimeSeparador() {
 	console.log("_______________________________________________________________________________");
 }
-
-exports.parserHtml = function(url) {
-	http.get(url, function(response) {
-		main(response);
-	}).on('error', function(e) {
-		console.log("Got error: " + e.message);
-	});
-};
