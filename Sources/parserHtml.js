@@ -1,6 +1,9 @@
 var treeDom = require("./treeDom");
 var http = require('http');
 var domutils = require('domutils');
+var events = require('events'); 
+
+emissorEvento = new events.EventEmitter();
 
 function main(response) {
 	var data = "";
@@ -13,6 +16,8 @@ function main(response) {
 		imprimeApresentacao(dom);
 
 		imprimeNoticiasInformacoes(dom);
+
+		emissorEvento.on('rodape', imprimeRodape(dom));
 	});
 }
 
@@ -184,7 +189,7 @@ function getTextoApresentacao(response, dom) {
 		console.log(textoApresentacao[0].data);
 		imprimeSeparador();
 
-		imprimeRodape(dom);
+		emissorEvento.emit('rodape');
 	});
 }
 
