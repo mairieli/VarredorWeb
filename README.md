@@ -12,6 +12,10 @@ $ npm install htmlparser2
 ```
 $ npm install domutils
 ```
+[request](https://github.com/request/request)
+```
+$ npm install request
+```
 ### Execução:
 ```
 $ node --version
